@@ -44,11 +44,11 @@ export default function LeaderboardPage() {
       </div>
 
       {mode === "daily" && (
-        <Leaderboard entries={daily} type="daily" />
+        <Leaderboard entries={daily} type="daily"/>
       )}
 
       {mode === "global" && (
-        <Leaderboard entries={global} type="global" />
+        <Leaderboard entries={global} type="global"/>
       )}
 
     </main>

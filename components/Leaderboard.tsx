@@ -3,7 +3,9 @@
 type Entry = {
   username: string;
   wins?: number;
-  numGuesses?: number;
+  numGuesses?: number | null;
+  won?: boolean;
+  maxGuesses?: number;
 };
 
 type Props = {
@@ -20,21 +22,67 @@ export default function Leaderboard({ entries, type }: Props) {
         {type === "daily" ? "Daily Leaderboard" : "Global Leaderboard"}
       </h2>
 
-      {entries.map((e, i) => (
-        <div
-          key={i}
-          className="flex justify-between border p-2 rounded"
-        >
-          <span>
-            {i + 1}. {e.username}
-          </span>
+      {entries.map((e, i) => {
 
-          <span>
-            {type === "daily" ? `${e.numGuesses}/6` : e.wins}
-          </span>
+        return (
+          <div
+            key={i}
+            className="flex justify-between border p-2 rounded"
+          >
+            <span>
+              {i + 1}. {e.username}
+            </span>
 
-        </div>
-      ))}
+            <span>
+              {type === "daily" ? (() => {
+
+                const max = e.maxGuesses ?? 6; // safe fallback
+
+                const status =
+                  e.won === true
+                    ? "won"
+                    : e.numGuesses !== null &&
+                      e.numGuesses !== undefined &&
+                      e.numGuesses < max
+                    ? "incomplete"
+                    : "lost";
+
+                return (
+                  <span className="flex gap-2 items-center">
+                    
+                    <span>
+                      {e.numGuesses !== null && e.numGuesses !== undefined
+                        ? `${e.numGuesses}/${max}`
+                        : `0/${max}`}
+                    </span>
+
+                    <span
+                      className={`text-sm font-semibold ${
+                        status === "won"
+                          ? "text-green-600"
+                          : status === "lost"
+                          ? "text-red-500"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {status === "won"
+                        ? "Won"
+                        : status === "lost"
+                        ? "Lost"
+                        : "In Progress"}
+                    </span>
+
+                  </span>
+                );
+
+              })() : (
+                e.wins
+              )}
+            </span>
+
+          </div>
+        );
+      })}
 
     </div>
   );

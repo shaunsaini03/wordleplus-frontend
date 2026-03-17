@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { login } from "@/lib/api";
 
 export default function LoginPage() {
 
@@ -12,15 +13,7 @@ export default function LoginPage() {
 
     if (!username.trim()) return;
 
-    const res = await fetch("https://wordleplus-backend-1.onrender.com/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ username })
-    });
-
-    const data = await res.json();
+    const data = await login(username.trim());
 
     localStorage.setItem("username", username);
 
