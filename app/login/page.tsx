@@ -28,7 +28,7 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex h-screen flex-col items-center justify-center gap-6">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-4">
 
       <h1 className="text-4xl font-bold">Login</h1>
 

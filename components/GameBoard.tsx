@@ -93,8 +93,10 @@ export default function GameBoard({
               return (
                 <div
                   key={col}
-                  className={`w-14 h-14 border-2 ${border} flex items-center justify-center font-bold text-xl uppercase ${bg}`}
-                >
+                  className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 
+                  border-2 ${border} flex items-center justify-center 
+                  font-bold text-lg sm:text-xl uppercase ${bg}`}
+                > 
                   {letter}
                 </div>
               );
