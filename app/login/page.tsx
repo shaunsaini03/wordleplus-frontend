@@ -12,7 +12,7 @@ export default function LoginPage() {
 
     if (!username.trim()) return;
 
-    const res = await fetch("http://localhost:8080/auth/login", {
+    const res = await fetch("https://wordleplus-backend-1.onrender.com", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
