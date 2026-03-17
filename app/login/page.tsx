@@ -12,7 +12,7 @@ export default function LoginPage() {
 
     if (!username.trim()) return;
 
-    const res = await fetch("https://wordleplus-backend-1.onrender.com", {
+    const res = await fetch("https://wordleplus-backend-1.onrender.com/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
