@@ -2,12 +2,15 @@
 
 import { useEffect } from "react";
 
+import { Dispatch, SetStateAction } from "react";
+
+
 type Props = {
   wordLength: number;
   maxGuesses: number;
   guesses: any[];
   currentGuess: string;
-  setCurrentGuess: (guess: string) => void;
+  setCurrentGuess: Dispatch<SetStateAction<string>>;
   finished: boolean;
   onSubmitGuess: () => void;
 };
@@ -24,6 +27,13 @@ export default function GameBoard({
 
   useEffect(() => {
 
+    // ✅ detect mobile
+    const isMobile =
+      typeof window !== "undefined" &&
+      /Mobi|Android|iPhone/i.test(navigator.userAgent);
+
+    if (isMobile) return; // 🚨 disable keyboard listener on mobile
+
     function handleKeyDown(e: KeyboardEvent) {
 
       if (finished) return;
@@ -36,12 +46,15 @@ export default function GameBoard({
       }
 
       if (key === "backspace") {
-        setCurrentGuess(currentGuess.slice(0, -1));
+        setCurrentGuess(prev => prev.slice(0, -1)); // ✅ fix stale state
         return;
       }
 
-      if (/^[a-z]$/.test(key) && currentGuess.length < wordLength) {
-        setCurrentGuess(currentGuess + key);
+      if (/^[a-z]$/.test(key)) {
+        setCurrentGuess(prev => {
+          if (prev.length >= wordLength) return prev;
+          return prev + key;
+        });
       }
 
     }
@@ -52,7 +65,7 @@ export default function GameBoard({
       window.removeEventListener("keydown", handleKeyDown);
     };
 
-  }, [currentGuess, wordLength, finished]);
+  }, [wordLength, finished, onSubmitGuess, setCurrentGuess]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -70,22 +83,18 @@ export default function GameBoard({
               let bg = "bg-white";
               let border = "border-gray-400";
   
-              // Completed guess row
               if (guess) {
-  
                 letter = guess.guessWord[col];
-  
+
                 const result = guess.result[col];
-  
+
                 if (result === "G") bg = "bg-green-500 text-white";
                 if (result === "Y") bg = "bg-yellow-400 text-white";
                 if (result === "B") bg = "bg-gray-500 text-white";
-  
+
                 border = "border-transparent";
-  
               }
-  
-              // Active typing row
+
               else if (row === guesses.length) {
                 letter = currentGuess[col] || "";
               }
@@ -104,8 +113,8 @@ export default function GameBoard({
             })}
   
           </div>
-        );
   
+        );
       })}
   
     </div>
