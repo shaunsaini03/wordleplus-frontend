@@ -74,31 +74,6 @@ export default function GamePage() {
         onSubmitGuess={handleSubmitGuess}
       />
 
-      {/* Mobile input */}
-      {!finished && (
-        <input
-          type="text"
-          value={currentGuess}
-          onChange={(e) =>
-            setCurrentGuess(
-              e.target.value.toLowerCase().slice(0, wordLength)
-            )
-          }
-          className="border p-3 text-lg rounded w-full max-w-xs text-center uppercase"
-          placeholder="Type your guess"
-        />
-      )}
-
-      {/* Submit button (mobile friendly) */}
-      {!finished && (
-        <button
-          onClick={handleSubmitGuess}
-          className="w-full max-w-xs py-3 bg-green-600 text-white rounded text-lg active:scale-95"
-        >
-          Submit Guess
-        </button>
-      )}
-
       {finished && (
         <button
           className="w-full max-w-xs py-3 border rounded font-bold active:scale-95"

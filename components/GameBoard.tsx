@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { Dispatch, SetStateAction } from "react";
+import Keyboard, { LetterState } from "@/components/Keyboard";
 
 
 type Props = {
@@ -25,50 +26,62 @@ export default function GameBoard({
   onSubmitGuess
 }: Props) {
 
-  useEffect(() => {
+  const letterStates = useMemo(() => {
+    const states: Record<string, LetterState> = {};
+    const priority: Record<LetterState, number> = { correct: 3, present: 2, absent: 1, unused: 0 };
 
-    // ✅ detect mobile
+    for (const guess of guesses) {
+      for (let i = 0; i < guess.guessWord.length; i++) {
+        const letter = guess.guessWord[i];
+        const code = guess.result[i];
+        const state: LetterState = code === "G" ? "correct" : code === "Y" ? "present" : "absent";
+        if ((priority[state] ?? 0) > (priority[states[letter]] ?? 0)) {
+          states[letter] = state;
+        }
+      }
+    }
+
+    return states;
+  }, [guesses]);
+
+  function handleKey(key: string) {
+    if (finished) return;
+
+    if (key === "enter") {
+      onSubmitGuess();
+      return;
+    }
+
+    if (key === "backspace") {
+      setCurrentGuess(prev => prev.slice(0, -1));
+      return;
+    }
+
+    if (/^[a-z]$/.test(key)) {
+      setCurrentGuess(prev => {
+        if (prev.length >= wordLength) return prev;
+        return prev + key;
+      });
+    }
+  }
+
+  useEffect(() => {
     const isMobile =
       typeof window !== "undefined" &&
       /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
-    if (isMobile) return; // 🚨 disable keyboard listener on mobile
+    if (isMobile) return;
 
     function handleKeyDown(e: KeyboardEvent) {
-
-      if (finished) return;
-
-      const key = e.key.toLowerCase();
-
-      if (key === "enter") {
-        onSubmitGuess();
-        return;
-      }
-
-      if (key === "backspace") {
-        setCurrentGuess(prev => prev.slice(0, -1)); // ✅ fix stale state
-        return;
-      }
-
-      if (/^[a-z]$/.test(key)) {
-        setCurrentGuess(prev => {
-          if (prev.length >= wordLength) return prev;
-          return prev + key;
-        });
-      }
-
+      handleKey(e.key.toLowerCase());
     }
 
     window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [wordLength, finished, onSubmitGuess, setCurrentGuess]);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col items-center gap-4">
   
       {Array.from({ length: maxGuesses }).map((_, row) => {
   
@@ -116,7 +129,8 @@ export default function GameBoard({
   
         );
       })}
-  
+
+      <Keyboard letterStates={letterStates} onKey={handleKey} />
     </div>
   );
 }
